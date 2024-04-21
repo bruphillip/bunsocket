@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <div>
+        <h1>WebSocket with Bun</h1>
+        <p>Click the button to join the WebSocket</p>
+
+        <div>
+          <input type="text" id="name" placeholder="Enter your name" />
+          <button onclick="addName()">addName</button>
+        </div>
+
+        <button onclick="createRoom()">createRoom</button>
+      </div>
+
+      <div>
+        <div>
+          <h2>Rooms</h2>
+
+          <div id="rooms"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let socket = null;
+
+      function joinSocket() {
+        socket = new WebSocket('ws://localhost:3000?name=John');
+
+        socket.addEventListener('open', (ev) => {
+          console.log('opened', ev);
+        });
+
+        socket.addEventListener('message', (ev) => {
+          console.log('message', ev);
+        });
+        socket.addEventListener('error', (ev) => {
+          console.log('error', ev);
+        });
+        socket.addEventListener('close', (ev) => {
+          console.log('closed', ev);
+        });
+
+        socket.addEventListener('chat', (ev) => {
+          console.log('chatEvent', ev);
+        });
+
+        socket.addEventListener('listRoom', (ev) => {
+          console.log('listRoom', ev);
+        });
+      }
+
+      joinSocket();
+
+      function createRoom() {
+        console.log(socket);
+        const event = {
+          eventName: 'createRoom',
+        };
+
+        socket.send(JSON.stringify(event));
+      }
+
+      function addName() {
+        console.log(socket);
+        const event = {
+          eventName: 'addName',
+          name: document.getElementById('name').value,
+        };
+
+        socket.send(JSON.stringify(event));
+      }
+    </script>
+  </body>
+</html>
